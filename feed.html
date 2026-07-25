@@ -189,7 +189,7 @@
 <body>
 
     <a id="logo" href="/" aria-label="home">
-        <img src="https://res.cloudinary.com/duqx17nie/image/upload/v1785010120/logo-1_t8g761.png" alt="subshelter">
+        <img src="/https://res.cloudinary.com/duqx17nie/image/upload/v1785010120/logo-1_t8g761.png" alt="subshelter">
     </a>
 
     <button class="nav-arrow" id="arrow-prev" aria-label="previous">&#8592;</button>
@@ -200,6 +200,42 @@
     </div>
 
     <canvas id="hearts-canvas"></canvas>
+
+    <!-- fixed overlay: description + actions -->
+    <div id="video-desc" style="
+        position: fixed;
+        bottom: 24px;
+        left: 16px;
+        right: 80px;
+        font-family: Arial Narrow, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        text-shadow: 0 1px 6px rgba(0,0,0,0.85);
+        line-height: 1.45;
+        z-index: 50;
+        pointer-events: none;
+    "></div>
+
+    <div id="video-actions" style="
+        position: fixed;
+        right: 12px;
+        bottom: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+        z-index: 50;
+    ">
+        <button id="heart-btn" class="action-btn heart-btn" aria-label="like">
+            <svg viewBox="0 0 24 24"><path class="heart-icon" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <div style="position:relative;">
+            <button id="share-btn" class="action-btn share-btn" aria-label="share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </button>
+            <div id="copied-toast" class="copied-toast">copied!</div>
+        </div>
+    </div>
 
 <script>
 // ─────────────────────────────────────────
@@ -223,7 +259,7 @@ const ALL_VIDEOS = [
         id: "26-07-13_susak-1",
         url: "https://res.cloudinary.com/duqx17nie/video/upload/v1783898831/IMG_2911_uag683.mp4",
         position: "center",
-        description: "susak, jul 2026",
+        description: "šušak, jul 2026",
         tags: ["sea", "day", "orange"]
     },
     {
@@ -304,51 +340,7 @@ videos.forEach((v, i) => {
     video.style.objectPosition = v.position;
     video.setAttribute('playsinline', '');
 
-    const desc = document.createElement('div');
-    desc.className = 'video-desc';
-    desc.textContent = v.description;
-
-    const actions = document.createElement('div');
-    actions.className = 'video-actions';
-
-    // heart
-    const heartBtn = document.createElement('button');
-    heartBtn.className = 'action-btn heart-btn';
-    heartBtn.setAttribute('aria-label', 'like');
-    if (localStorage.getItem('hearted_' + v.id) === 'true') heartBtn.classList.add('hearted');
-    heartBtn.innerHTML = `<svg viewBox="0 0 24 24"><path class="heart-icon" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
-    heartBtn.addEventListener('click', () => {
-        const now = !heartBtn.classList.contains('hearted');
-        heartBtn.classList.toggle('hearted');
-        heartBtn.classList.remove('jump');
-        void heartBtn.offsetWidth;
-        heartBtn.classList.add('jump');
-        localStorage.setItem('hearted_' + v.id, now);
-        if (navigator.vibrate) navigator.vibrate(28);
-        if (now) launchHearts();
-    });
-
-    // share
-    const shareBtn = document.createElement('button');
-    shareBtn.className = 'action-btn share-btn';
-    shareBtn.setAttribute('aria-label', 'share');
-    shareBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
-    const toast = document.createElement('div');
-    toast.className = 'copied-toast';
-    toast.textContent = 'copied!';
-    shareBtn.appendChild(toast);
-    shareBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(`${location.origin}/feed#${v.id}`).then(() => {
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1800);
-        });
-    });
-
-    actions.appendChild(heartBtn);
-    actions.appendChild(shareBtn);
     slide.appendChild(video);
-    slide.appendChild(desc);
-    slide.appendChild(actions);
     strip.appendChild(slide);
 });
 
@@ -385,6 +377,42 @@ function getVideo(i) {
     return document.getElementById('slide-' + i)?.querySelector('video');
 }
 
+// overlay elements
+const descEl    = document.getElementById('video-desc');
+const heartBtn  = document.getElementById('heart-btn');
+const shareBtn  = document.getElementById('share-btn');
+const copiedToast = document.getElementById('copied-toast');
+
+heartBtn.addEventListener('click', () => {
+    const v = videos[current];
+    const now = !heartBtn.classList.contains('hearted');
+    heartBtn.classList.toggle('hearted');
+    heartBtn.classList.remove('jump');
+    void heartBtn.offsetWidth;
+    heartBtn.classList.add('jump');
+    localStorage.setItem('hearted_' + v.id, now);
+    if (navigator.vibrate) navigator.vibrate(28);
+    if (now) launchHearts();
+});
+
+shareBtn.addEventListener('click', () => {
+    const v = videos[current];
+    navigator.clipboard.writeText(`${location.origin}/feed#${v.id}`).then(() => {
+        copiedToast.classList.add('show');
+        setTimeout(() => copiedToast.classList.remove('show'), 1800);
+    });
+});
+
+function updateOverlay(i) {
+    const v = videos[i];
+    descEl.textContent = v.description;
+    if (localStorage.getItem('hearted_' + v.id) === 'true') {
+        heartBtn.classList.add('hearted');
+    } else {
+        heartBtn.classList.remove('hearted');
+    }
+}
+
 function updateActiveVideo(i) {
     videos.forEach((_, idx) => {
         const v = getVideo(idx);
@@ -395,6 +423,7 @@ function updateActiveVideo(i) {
             v.pause();
         }
     });
+    updateOverlay(i);
 }
 
 // start first video
