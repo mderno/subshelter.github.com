@@ -142,6 +142,7 @@
             max-width: 566px;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
         
         .video-frame video {
@@ -150,6 +151,21 @@
             max-width: 100%;
             height: auto;
         }
+        
+        .small-video-frame {
+        width: min(100%, 566px);
+        aspect-ratio: 1 / 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+
+        .small-video-frame video {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        }
+
         
         .click video {
             display: block;
@@ -202,7 +218,10 @@
     
     
     <div class="video-frame">
-      <video class="click-video" preload="metadata" loop>
+      <video 
+      class="click-video" 
+      preload="auto" 
+      loop playsinline muted>
         <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788439877/butik26.mp4" type="video/mp4">
       </video>
     </div>
@@ -223,8 +242,11 @@
     <br>
     
     
-    <div class="video-frame">
-      <video class="click-video" preload="metadata" loop>
+    <div class="small-video-frame">
+      <video class="click-video" 
+      style="width: 300px; 
+      preload="auto" 
+      loop playsinline muted>
         <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788446735/gabonsa26-1.mp4" type="video/mp4">
       </video>
     </div>
@@ -258,8 +280,11 @@
     <br>
     
     
-    <div class="video-frame">
-      <video class="click-video" preload="metadata" loop>
+    <div class="small-video-frame">
+      <video class="click-video" 
+      style="width: 300px;
+      preload="auto" 
+      loop playsinline muted>
         <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788465344/mayales-orto-bar.mp4" type="video/mp4">
       </video>
     </div>
