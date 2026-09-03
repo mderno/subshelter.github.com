@@ -16,10 +16,16 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
     
+    
     <style>
     
     
-    
+        .content-wrap {
+            max-width: 566px;
+            margin: 0 auto;
+            padding: 0 1.5%;
+        }
+        
         body {
             font-family: Arial Narrow, sans-serif;
             font-size: 18px;
@@ -135,12 +141,10 @@
 
 
 <body>
-    
+    <div class="content-wrap">
     
     
     <!-- HEADER--> 
-    
-    
     
     <p class="header-links"><a href="https://subshelter.org">&nbsp;~ home&nbsp;</a>&nbsp;<a href="https://subshelter.org/about">&nbsp;𓁺 about&nbsp;</a>&nbsp;<!--<a href="https://subshelter.org/blog">&nbsp;𖦹 deep dive&nbsp;</a>--></p>
 
@@ -150,8 +154,6 @@
     
     
     <!-- CONTENT-->
-    
-    
     
     <h1 class="article"><a href="https://subshelter.org/what-actually-bothers-me">What actually bothers me<br> on the scene lately<a/></h1>
     <hr class="content-divider">
@@ -193,25 +195,32 @@
     <p class="post-date">(26: jul 4) </p>
     <!-- <p class="tags"><a href="https://subshelter.org/tagged/dj">#dj</a>&nbsp;<a href="https://subshelter.org/tagged/vid">#vid</a></p>-->
     
-    
+    <!-- CONTENT-->
     
     <!--JAVASCRIPT-->     
-
-
+    
     <script>
-document.querySelectorAll('.click-video').forEach(video => {
-  video.addEventListener('click', () => {
-    if (video.paused) {
-      video.muted = false;
-      video.play();
-    } else {
-      video.pause();
-    }
-  });
-});
-</script>
+        
+        
+        
+    document.querySelectorAll('.click-video').forEach(video => {
+      video.addEventListener('click', () => {
+        if (video.paused) {
+          video.muted = false;
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    });
+
+
+    
+    </script>
+
     
     
+    </div>
 </body>
 
 </html>
