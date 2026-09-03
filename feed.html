@@ -1,680 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--hello sexy people (* ‿ -)
+
+<!--hello you curious human being (* ‿ -)
 -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="a refuge beneath the surface. run and curated by maša dernovšek">
+    <meta name="description" content="subshelter | a refuge beneath the surface | run and curated by maša dernovšek">
     <title>subshelter</title>
     <link rel="icon" href="/favicon-4.png" type="image/png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
+    
+    
+    
+        body {
             font-family: Arial Narrow, sans-serif;
+            font-size: 18px;
+            color: #1C1C1C;
+            background-color: #F5F3F0;
+            margin-left: 1.5%;
+            margin-top: 1.5%;
         }
+     
+        h1 {
+            font-family: "VT323", monospace;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 34px;
+            color: #1C1C1C;
+            line-height: 0.8;
+            margin-top: 3px;
+            margin-bottom: 11px;
+        }
+    
+        h1 a {
+            text-decoration: none;
+            color: #1C1C1C;
+        }   
 
-        /* ── LOGO ── */
-        #logo {
-            position: fixed;
-            top: 14px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            display: block;
-            line-height: 0;
+        h1 a:hover {
+            color: #1C1C1C;
         }
-        #logo img {
-            height: 30px;
-            width: auto;
-            display: block;
-            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5));
+        
+        p {
+            font-family: Times New Roman, Regular;
+            font-size: 18px;
+            color: #1C1C1C;
+            margin: 1px;
         }
-
-        /* ── DESKTOP ARROWS ── */
-        .nav-arrow {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 50;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #fff;
-            font-size: 26px;
-            padding: 24px 16px;
-            opacity: 0.18;
-            transition: opacity 0.2s ease;
-            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
-            -webkit-tap-highlight-color: transparent;
-            display: none;
+            
+        p.header-links {
+            text-align: center;
+            font-family: Times New Roman, Regular;
+            font-size: 18px;
+            color: #1C1C1C;
+            margin: 1px;
+            margin-bottom: 40px;
+        }    
+            
+        p.header-links a {
+            text-decoration: none
         }
-        .nav-arrow { opacity: 0.7; }
-        .nav-arrow:hover { opacity: 0.2; }
-        #arrow-prev { left: 1.5%; }
-        #arrow-next { right: 1.5%; }
-
-        @media (min-width: 769px) {
-            .nav-arrow { display: block; }
-        }
-
-        /* ── VIEWPORT / STAGE ── */
-        #stage {
-            position: fixed;
-            inset: 0;
-            overflow: hidden;
-        }
-
-        /* ── SLIDES ── */
-        /* slides sit in a horizontal (desktop) or vertical (mobile) strip */
-        #strip {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            /* direction set by JS */
-            will-change: transform;
-        }
-
-        .slide {
-            flex-shrink: 0;
-            width: 100vw;
-            height: 100dvh;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .slide video {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* ── DESCRIPTION ── */
-        .video-desc {
-            position: absolute;
-            bottom: 24px;
-            left: 16px;
-            right: 80px;
+        
+        p.caption {
+            font-family: Times New Roman, serif;
             font-size: 13px;
-            color: #fff;
-            text-shadow: 0 1px 6px rgba(0,0,0,0.85);
-            line-height: 1.45;
-            z-index: 10;
-            pointer-events: none;
+            color: #1C1C1C;
+            margin-top: 0px;
         }
-
-        /* ── RIGHT ACTIONS ── */
-        .video-actions {
-            position: absolute;
-            right: 12px;
-            bottom: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 22px;
-            z-index: 10;
+        
+        p.post-date {
+            font-family: Times New Roman, serif;
+            font-size: 13px;
+            color: #1C1C1C;
+            margin-bottom: 40px;
         }
-
-        @media (max-width: 768px) {
-            .video-actions { bottom: 100px; }
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #fff;
-            padding: 0;
-            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
-            -webkit-tap-highlight-color: transparent;
-            transition: transform 0.12s ease;
-        }
-        .action-btn:active { transform: scale(0.9); }
-        .action-btn svg { width: 28px; height: 28px; display: block; }
-
-        /* heart */
-        .heart-icon {
-            fill: none;
-            stroke: #fff;
-            stroke-width: 2;
-            transition: fill 0.18s ease, stroke 0.18s ease;
-        }
-        .heart-btn.hearted .heart-icon {
-            fill: #e8304a;
-            stroke: #e8304a;
-        }
-        @keyframes heart-jump {
-            0%   { transform: scale(1); }
-            30%  { transform: scale(1.5); }
-            65%  { transform: scale(0.88); }
-            100% { transform: scale(1); }
-        }
-        .heart-btn.jump { animation: heart-jump 0.32s cubic-bezier(0.36,0.07,0.19,0.97); }
-
-        /* share */
-        .share-btn { position: relative; }
-        .copied-toast {
-            position: absolute;
-            right: 38px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.72);
-            color: #fff;
+        
+        p.tags {
+            font-family: "Georgia", serif;
             font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.18s ease;
+            color: #1C1C1C;
+            margin-top: -3px;
         }
-        .copied-toast.show { opacity: 1; }
-
-        /* ── FLOATING HEARTS CANVAS ── */
-        #hearts-canvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 200;
+        
+        a {
+            color: #1C1C1C;
         }
+        
+        a:hover {
+            color: #165902;
+        }
+            
+        .video-frame {
+            width: 100%;
+            max-width: 566px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .video-frame video {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .click video {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+        
+        .content-divider {
+            width: 100%;
+            max-width: 566px;
+            border: 0;
+            border-top: 0.5px solid #1C1C1C;
+            margin: 6px 0 6px;
+        }
+        
+        
     </style>
 </head>
+
+
+
 <body>
+    
+    
+    
+    <!-- HEADER--> 
+    
+    
+    
+    <p class="header-links"><a href="https://subshelter.org">&nbsp;~ home&nbsp;</a>&nbsp;<a href="https://subshelter.org/about">&nbsp;𓁺 about&nbsp;</a>&nbsp;<!--<a href="https://subshelter.org/blog">&nbsp;𖦹 deep dive&nbsp;</a>--></p>
 
-    <a id="logo" href="/" aria-label="home">
-        <img src="https://res.cloudinary.com/duqx17nie/image/upload/v1785010120/logo-1_t8g761.png" alt="subshelter">
-    </a>
 
-    <button class="nav-arrow" id="arrow-prev" aria-label="previous">&#8592;</button>
-    <button class="nav-arrow" id="arrow-next" aria-label="next">&#8594;</button>
-
-    <div id="stage">
-        <div id="strip"></div>
+    <br>
+    
+    
+    
+    <!-- CONTENT-->
+    
+    
+    
+    <h1 class="article"><a href="https://subshelter.org/what-actually-bothers-me">What actually bothers me<br> on the scene lately<a/></h1>
+    <hr class="content-divider">
+    <p class="post-date">(26: jul 16) </p>
+    
+    
+    <br>
+    
+    
+    <div class="video-frame">
+      <video class="click-video" preload="metadata" loop>
+        <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788439877/butik26.mp4" type="video/mp4">
+      </video>
     </div>
-
-    <canvas id="hearts-canvas"></canvas>
-
-    <!-- fixed overlay: description + actions -->
-    <div id="video-desc" style="
-        position: fixed;
-        bottom: 24px;
-        left: 16px;
-        right: 80px;
-        font-family: Arial Narrow, sans-serif;
-        font-size: 13px;
-        color: #fff;
-        text-shadow: 0 1px 6px rgba(0,0,0,0.85);
-        line-height: 1.45;
-        z-index: 50;
-        pointer-events: none;
-    "></div>
-
-    <div id="video-actions" style="
-        position: fixed;
-        right: 12px;
-        bottom: 80px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 22px;
-        z-index: 50;
-    ">
-        <button id="heart-btn" class="action-btn heart-btn" aria-label="like">
-            <svg viewBox="0 0 24 24"><path class="heart-icon" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </button>
-        <div style="position:relative;">
-            <button id="share-btn" class="action-btn share-btn" aria-label="share">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-            </button>
-            <div id="copied-toast" class="copied-toast">copied!</div>
-        </div>
+    <hr class="content-divider">
+    <p class="caption">closing energy on garden stage, butik festival (SI) 2026</p>
+    <p class="post-date">(26: jul 16) </p>
+    <!-- <p class="tags"><a href="https://subshelter.org/tagged/dj">#dj</a>&nbsp;<a href="https://subshelter.org/tagged/vid">#vid</a></p>-->
+    
+    
+    <br>
+    
+    
+    <h1 class="article"><a href="https://subshelter.org/no-cap">The silent death of <br>the capital letter<a/></h1>
+    <hr class="content-divider">
+    <p class="post-date">(26: jul 16) </p>
+    
+    
+    <br>
+    
+    
+    <div class="video-frame">
+      <video class="click-video" preload="metadata" loop>
+        <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788446735/gabonsa26-1.mp4" type="video/mp4">
+      </video>
     </div>
+    <hr class="content-divider">
+    <p class="caption">seen on gabonsa festival, innsbruck (AT) 2026</p>
+    <p class="post-date">(26: jul 4) </p>
+    <!-- <p class="tags"><a href="https://subshelter.org/tagged/dj">#dj</a>&nbsp;<a href="https://subshelter.org/tagged/vid">#vid</a></p>-->
+    
+    
+    
+    <!--JAVASCRIPT-->     
 
-<script>
-// ─────────────────────────────────────────
-// VIDEO DATA
-// Comment out any entry with // to retire it seasonally.
-// id       : unique string based on cloudinary filename
-// url      : cloudinary URL
-// position : CSS object-position e.g. "center" "top" "30% 60%"
-// description : shown bottom-left on the video
-// tags     : for future filtering
-// ─────────────────────────────────────────
-const ALL_VIDEOS = [
-    {
-        id: "25:susak_f-D",
-        url: "https://res.cloudinary.com/duqx17nie/video/upload/v1785014017/IMG_2841_xwochq.mp4",
-        position: "center",
-        description: "thu jun 11 2026",
-        tags: ["nature", "day"]
-    },
-    {
-        id: "26-07-13_susak-1",
-        url: "https://res.cloudinary.com/duqx17nie/video/upload/v1783898831/IMG_2911_uag683.mp4",
-        position: "center",
-        description: "šušak, jul 2026",
-        tags: ["sea", "day", "orange"]
-    },
-    {
-        id: "26-07-13_susak-2",
-        url: "https://res.cloudinary.com/duqx17nie/video/upload/v1783898829/IMG_2880_m7ij64.mp4",
-        position: "center",
-        description: "šušak, jul 2026",
-        tags: ["sea", "day", "blue"]
-    },
-    {
-        id: "26-07-13_jadrolinija-tv",
-        url: "https://res.cloudinary.com/duqx17nie/video/upload/v1783898831/IMG_2736_lfbcri.mp4",
-        position: "center",
-        description: "jadrolinija, jul 2026",
-        tags: ["sea", "day", "blue"]
-    },
-    {
-        id: "26-07-13_jadrolinija-okno",
-        url: "https://res.cloudinary.com/duqx17nie/video/upload/v1783898827/IMG_2739_zye0zk.mp4",
-        position: "center",
-        description: "jadrolinija, jul 2026",
-        tags: ["sea", "day", "blue"]
-    },
-];
 
-// Uncomment to enable shuffle:
-// const videos = shuffleArray([...ALL_VIDEOS]);
-const videos = ALL_VIDEOS;
-
-// function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-
-// ─────────────────────────────────────────
-// SETUP
-// ─────────────────────────────────────────
-const strip       = document.getElementById('strip');
-const arrowPrev   = document.getElementById('arrow-prev');
-const arrowNext   = document.getElementById('arrow-next');
-const heartsCanvas= document.getElementById('hearts-canvas');
-const heartsCtx   = heartsCanvas.getContext('2d');
-
-const isMobile = () => window.innerWidth <= 768;
-
-// strip direction
-function applyStripDirection() {
-    if (isMobile()) {
-        strip.style.flexDirection = 'column';
-        strip.style.width  = '100vw';
-        strip.style.height = `${videos.length * 100}dvh`;
+    <script>
+document.querySelectorAll('.click-video').forEach(video => {
+  video.addEventListener('click', () => {
+    if (video.paused) {
+      video.muted = false;
+      video.play();
     } else {
-        strip.style.flexDirection = 'row';
-        strip.style.width  = `${videos.length * 100}vw`;
-        strip.style.height = '100dvh';
+      video.pause();
     }
-}
-applyStripDirection();
-
-// current index and pixel offset
-let current = 0;
-let offsetPx = 0;      // committed offset (matches current slide)
-let dragDelta = 0;     // live drag offset
-let dragging = false;
-let animating = false;
-
-// ─────────────────────────────────────────
-// BUILD SLIDES
-// ─────────────────────────────────────────
-videos.forEach((v, i) => {
-    const slide = document.createElement('div');
-    slide.className = 'slide';
-    slide.id = 'slide-' + i;
-
-    const video = document.createElement('video');
-    video.src = v.url;
-    video.loop = true;
-    video.muted = false;
-    video.playsInline = true;
-    video.preload = i === 0 ? 'auto' : 'metadata';
-    video.style.objectPosition = v.position;
-    video.setAttribute('playsinline', '');
-
-    slide.appendChild(video);
-    strip.appendChild(slide);
+  });
 });
-
-// ─────────────────────────────────────────
-// STRIP TRANSFORM
-// ─────────────────────────────────────────
-function slideSize() {
-    return isMobile() ? window.innerHeight : window.innerWidth;
-}
-
-function setStripTransform(px, withTransition) {
-    strip.style.transition = withTransition
-        ? 'transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        : 'none';
-    if (isMobile()) {
-        strip.style.transform = `translateY(${-px}px)`;
-    } else {
-        strip.style.transform = `translateX(${-px}px)`;
-    }
-}
-
-function commitTo(index, animate) {
-    current = index;
-    offsetPx = index * slideSize();
-    setStripTransform(offsetPx, animate);
-    history.replaceState(null, '', `/feed#${videos[index].id}`);
-    updateActiveVideo(index);
-}
-
-// ─────────────────────────────────────────
-// VIDEO PLAYBACK
-// ─────────────────────────────────────────
-function getVideo(i) {
-    return document.getElementById('slide-' + i)?.querySelector('video');
-}
-
-// overlay elements
-const descEl    = document.getElementById('video-desc');
-const heartBtn  = document.getElementById('heart-btn');
-const shareBtn  = document.getElementById('share-btn');
-const copiedToast = document.getElementById('copied-toast');
-
-heartBtn.addEventListener('click', () => {
-    const v = videos[current];
-    const now = !heartBtn.classList.contains('hearted');
-    heartBtn.classList.toggle('hearted');
-    heartBtn.classList.remove('jump');
-    void heartBtn.offsetWidth;
-    heartBtn.classList.add('jump');
-    localStorage.setItem('hearted_' + v.id, now);
-    if (navigator.vibrate) navigator.vibrate(28);
-    if (now) launchHearts();
-});
-
-shareBtn.addEventListener('click', () => {
-    const v = videos[current];
-    navigator.clipboard.writeText(`${location.origin}/feed#${v.id}`).then(() => {
-        copiedToast.classList.add('show');
-        setTimeout(() => copiedToast.classList.remove('show'), 1800);
-    });
-});
-
-function updateOverlay(i) {
-    const v = videos[i];
-    descEl.textContent = v.description;
-    if (localStorage.getItem('hearted_' + v.id) === 'true') {
-        heartBtn.classList.add('hearted');
-    } else {
-        heartBtn.classList.remove('hearted');
-    }
-}
-
-function updateActiveVideo(i) {
-    videos.forEach((_, idx) => {
-        const v = getVideo(idx);
-        if (!v) return;
-        if (idx === i) {
-            v.play().catch(() => {});
-        } else {
-            v.pause();
-        }
-    });
-    updateOverlay(i);
-}
-
-// start first video
-window.addEventListener('load', () => {
-    commitTo(0, false);
-});
-
-// ─────────────────────────────────────────
-// NAVIGATE
-// ─────────────────────────────────────────
-function goTo(direction) {
-    if (animating) return;
-
-    const next = current + direction;
-
-    // at first video, swipe back → refresh
-    if (next < 0) {
-        // snap back with a little bounce then reload
-        setStripTransform(offsetPx - 80, true);
-        setTimeout(() => {
-            setStripTransform(offsetPx, true);
-            setTimeout(() => location.reload(), 380);
-        }, 300);
-        return;
-    }
-
-    // at last video, wrap to first
-    const target = next >= videos.length ? 0 : next;
-
-    animating = true;
-    commitTo(target, true);
-    setTimeout(() => { animating = false; }, 420);
-}
-
-// ─────────────────────────────────────────
-// TOUCH — TikTok-style drag
-// ─────────────────────────────────────────
-let touchStart = 0;
-let touchAxis  = null; // 'h' or 'v', locked on first move
-
-document.addEventListener('touchstart', e => {
-    if (animating) return;
-    touchStart = isMobile() ? e.touches[0].clientY : e.touches[0].clientX;
-    touchAxis = null;
-    dragging = true;
-    dragDelta = 0;
-    strip.style.transition = 'none';
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-    if (!dragging || animating) return;
-    const mobile = isMobile();
-    const cx = e.touches[0].clientX;
-    const cy = e.touches[0].clientY;
-    const raw = mobile ? cy - touchStart : cx - touchStart;
-
-    // lock axis on first meaningful move
-    if (!touchAxis) {
-        const dx = Math.abs(e.touches[0].clientX - (mobile ? 0 : touchStart));
-        const dy = Math.abs(e.touches[0].clientY - (mobile ? touchStart : 0));
-        if (Math.max(Math.abs(raw), dx, dy) < 6) return;
-        touchAxis = mobile ? 'v' : 'h';
-    }
-
-    if ((mobile && touchAxis !== 'v') || (!mobile && touchAxis !== 'h')) return;
-
-    dragDelta = raw;
-
-    // resistance at boundaries
-    let resistance = 1;
-    if (dragDelta > 0 && current === 0) resistance = 0.25; // pulling back at start
-    const applied = offsetPx - dragDelta * resistance;
-
-    if (mobile) {
-        strip.style.transform = `translateY(${-applied}px)`;
-    } else {
-        strip.style.transform = `translateX(${-applied}px)`;
-    }
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-    if (!dragging) return;
-    dragging = false;
-
-    const size = slideSize();
-    const threshold = size * 0.22; // 22% of screen to commit
-    const velocity  = Math.abs(dragDelta) > 60; // fast flick counts too
-
-    if (dragDelta < -threshold || (dragDelta < -30 && velocity)) {
-        goTo(1); // forward
-    } else if (dragDelta > threshold || (dragDelta > 30 && velocity)) {
-        goTo(-1); // back
-    } else {
-        // snap back to current
-        animating = true;
-        setStripTransform(offsetPx, true);
-        setTimeout(() => { animating = false; }, 420);
-    }
-
-    dragDelta = 0;
-    touchAxis = null;
-}, { passive: true });
-
-// ── MOUSE DRAG (desktop) ──
-let mouseDragging = false;
-let mouseStart = 0;
-let mouseDelta = 0;
-
-document.addEventListener('mousedown', e => {
-    if (animating) return;
-    mouseStart = e.clientX;
-    mouseDelta = 0;
-    mouseDragging = true;
-    strip.style.transition = 'none';
-});
-
-document.addEventListener('mousemove', e => {
-    if (!mouseDragging || animating) return;
-    mouseDelta = e.clientX - mouseStart;
-    const applied = offsetPx - mouseDelta;
-    strip.style.transform = `translateX(${-applied}px)`;
-});
-
-document.addEventListener('mouseup', e => {
-    if (!mouseDragging) return;
-    mouseDragging = false;
-    const size = slideSize();
-    if (mouseDelta < -size * 0.22) {
-        goTo(1);
-    } else if (mouseDelta > size * 0.22) {
-        goTo(-1);
-    } else {
-        animating = true;
-        setStripTransform(offsetPx, true);
-        setTimeout(() => { animating = false; }, 420);
-    }
-    mouseDelta = 0;
-});
-
-// ─────────────────────────────────────────
-// TRACKPAD SWIPE (desktop, horizontal only)
-// ─────────────────────────────────────────
-let trackpadCooldown = false;
-let trackpadAccum = 0;
-
-document.addEventListener('wheel', e => {
-    if (isMobile()) return;
-    // only horizontal axis
-    if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
-    if (trackpadCooldown) return;
-
-    trackpadAccum += e.deltaX;
-
-    if (Math.abs(trackpadAccum) > 50) {
-        goTo(trackpadAccum > 0 ? 1 : -1);
-        trackpadAccum = 0;
-        trackpadCooldown = true;
-        setTimeout(() => { trackpadCooldown = false; }, 600);
-    }
-}, { passive: true });
-
-// ─────────────────────────────────────────
-// DESKTOP ARROWS
-// ─────────────────────────────────────────
-arrowPrev.addEventListener('click', () => goTo(-1));
-arrowNext.addEventListener('click', () => goTo(1));
-
-// ─────────────────────────────────────────
-// KEYBOARD
-// ─────────────────────────────────────────
-document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(-1);
-});
-
-// ─────────────────────────────────────────
-// RESIZE
-// ─────────────────────────────────────────
-window.addEventListener('resize', () => {
-    applyStripDirection();
-    setStripTransform(current * slideSize(), false);
-});
-
-// ─────────────────────────────────────────
-// DIRECT LINK (#hash)
-// ─────────────────────────────────────────
-const hash = location.hash.replace('#', '');
-if (hash) {
-    const found = videos.findIndex(v => v.id === hash);
-    if (found > 0) {
-        setTimeout(() => commitTo(found, false), 0);
-    }
-}
-
-// ─────────────────────────────────────────
-// FLOATING HEARTS
-// ─────────────────────────────────────────
-const heartParticles = [];
-
-function resizeCanvas() {
-    heartsCanvas.width  = window.innerWidth;
-    heartsCanvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-function drawHeart(ctx, x, y, size) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.beginPath();
-    ctx.moveTo(0, -size * 0.3);
-    ctx.bezierCurveTo( size*0.5, -size,  size*1.2, -size*0.2, 0,  size*0.7);
-    ctx.bezierCurveTo(-size*1.2, -size*0.2, -size*0.5, -size, 0, -size*0.3);
-    ctx.closePath();
-    ctx.restore();
-}
-
-function launchHearts() {
-    const sx = window.innerWidth - 40;
-    const sy = window.innerHeight * 0.42;
-    for (let i = 0; i < 10; i++) {
-        setTimeout(() => {
-            heartParticles.push({
-                x: sx + (Math.random()-0.5)*28,
-                y: sy,
-                size: 7 + Math.random()*13,
-                alpha: 0.4 + Math.random()*0.22,
-                vy: -(1.7 + Math.random()*2.3),
-                vx: (Math.random()-0.5)*1.5,
-                life: 1.0
-            });
-        }, i * 115);
-    }
-}
-
-(function animateHearts() {
-    heartsCtx.clearRect(0, 0, heartsCanvas.width, heartsCanvas.height);
-    for (let i = heartParticles.length-1; i >= 0; i--) {
-        const p = heartParticles[i];
-        p.x += p.vx; p.y += p.vy; p.life -= 0.013;
-        p.alpha = p.life * 0.62;
-        if (p.life <= 0) { heartParticles.splice(i,1); continue; }
-        heartsCtx.globalAlpha = Math.max(0, p.alpha);
-        heartsCtx.fillStyle = '#e8304a';
-        drawHeart(heartsCtx, p.x, p.y, p.size);
-        heartsCtx.fill();
-    }
-    heartsCtx.globalAlpha = 1;
-    requestAnimationFrame(animateHearts);
-})();
 </script>
+    
+    
 </body>
+
 </html>
