@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--hello you curious human being (* ‿ -)
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="subshelter | a refuge beneath the surface | run and curated by maša dernovšek">
+    <title>subshelter</title>
+    <link rel="icon" href="/favicon-4.png" type="image/png">
+    <style>
+
+    /* WELCOME-OVERLAY */
+
+    #s-welcome {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        background: rgba(0,0,0,0.5);
+    }
+
+    #s-welcome p {
+        color: #fff;
+        font-family: Arial Narrow, sans-serif;
+        font-size: 16px;
+        text-align: center;
+        letter-spacing: 0.04em;
+        margin: 0;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    #s-welcome button {
+        background: none;
+        border: 1px solid #fff;
+        color: #fff;
+        font-family: Arial Narrow, sans-serif;
+        font-size: 15px;
+        letter-spacing: 0.1em;
+        padding: 10px 32px;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    #s-welcome button:hover {
+        background: #fff;
+        color: #000;
+    }
+
+    /* STAGE */
+    #s-stage {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        background: #000;
+        cursor: grab;
+        touch-action: none;
+    }
+
+    #s-stage.grabbing {
+        cursor: grabbing;
+    }
+
+    /* STRIP */
+    #s-strip {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        will-change: transform;
+    }
+
+    /* SLIDE */
+    .s-video {
+        position: relative;
+        width: 100vw;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .s-video video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* INFO-USERNAME-CAPTION */
+    .s-info {
+        position: absolute;
+        bottom: 80px;
+        left: 14px;
+        right: 72px;
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    .s-username {
+        font-family: Arial Narrow, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.85);
+        margin-bottom: 4px;
+    }
+
+    .s-caption {
+        font-family: Arial Narrow, sans-serif;
+        font-size: 13px;
+        color: #fff;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.85);
+        line-height: 1.4;
+    }
+
+    /* ── ACTION-ICONS */
+    .s-actions {
+        position: absolute;
+        right: 10px;
+        bottom: 80px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .s-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
+        -webkit-tap-highlight-color: transparent;
+        position: relative;
+    }
+
+    .s-btn svg {
+        width: 30px;
+        height: 30px;
+        display: block;
+    }
+
+    /* heart */
+    .s-heart-icon {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 2;
+        transition: fill 0.15s ease, stroke 0.15s ease;
+    }
+
+    .s-btn.hearted .s-heart-icon {
+        fill: #e8304a;
+        stroke: #e8304a;
+    }
+
+    @keyframes s-heart-jump {
+        0%   { transform: scale(1); }
+        30%  { transform: scale(1.55); }
+        65%  { transform: scale(0.85); }
+        100% { transform: scale(1); }
+    }
+
+    .s-btn.s-jumping {
+        animation: s-heart-jump 0.32s cubic-bezier(0.36,0.07,0.19,0.97);
+    }
+
+    /* toast */
+    .s-toast {
+        position: absolute;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.72);
+        color: #fff;
+        font-family: Arial Narrow, sans-serif;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 3px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease;
+    }
+
+    .s-toast.show { opacity: 1; }
+
+    /* LOGO */
+    #s-logo {
+        position: fixed;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+        display: block;
+        line-height: 0;
+    }
+
+    #s-logo img {
+        height: 30px;
+        width: auto;
+        display: block;
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5));
+    }
+
+    /* HEARTS-CANVAS */
+    #s-hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 200;
+    }
+
+    </style>
+
+</head>
+<body>
+
+<!--
+HOW TO ADD A VIDEO:
+Copy one <div class="s-video"> block and fill in:
+  data-id:       unique string, e.g. "my-video-1"
+  data-username: e.g. "@subshelter" or a persona name
+  data-caption:  caption text
+  poster:        cloudinary thumbnail URL (change .mp4 to .jpg, add so_0/ before version)
+  <source src>:  cloudinary video URL
+-->
+
+
+
+    <!--LOGO-->
+    <a id="s-logo" href="/" aria-label="home">
+        <img src="/logo.png" alt="subshelter">
+    </a>
+
+    <!-- WELCOME-OVERLAY -->
+    <div id="s-welcome">
+        <p>this site autoplays videos with sound</p>
+        <button id="s-enter-btn">enter</button>
+    </div>
+
+    <!--FEED-->
+    <div id="s-stage">
+        <div id="s-strip">
+
+            <!--VIDEOS-->
+
+            <div class="s-video"
+                 data-id="26-05-mayales-1"
+                 data-username="@subshelter"
+                 data-caption="Mayales in Orto Bar, 2026">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788465344/mayales-orto-bar.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788465344/mayales-orto-bar.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="s-video"
+                 data-id="26-07-gabonsa-1"
+                 data-username="@subshelter"
+                 data-caption="seen on Gabonsa festival, Innsbruck 2026">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788446735/gabonsa26-1.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788446735/gabonsa26-1.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="s-video"
+                 data-id="25-08-susak-jadrolinija-window"
+                 data-username="@subshelter"
+                 data-caption="čao celina">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562504/susak-jadrolinija-window.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562504/susak-jadrolinija-window.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="s-video"
+                 data-id="25-08-susak-jadrolinija-tv"
+                 data-username="@subshelter"
+                 data-caption="jadrolinija, avg 25">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562511/susak-jadrolinija-tv.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562511/susak-jadrolinija-tv.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="s-video"
+                 data-id="25-08-susak-grad-plava"
+                 data-username="@subshelter"
+                 data-caption=":-)">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/v1788562509/susak-grad-plava.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562509/susak-grad-plava.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="s-video"
+                 data-id="25-08-susak-grad"
+                 data-username="@subshelter"
+                 data-caption="dobro jutro ribari">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562514/susak-grad.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562514/susak-grad.mp4" type="video/mp4">
+                </video>
+            </div>
+
+             <div class="s-video"
+                 data-id="25-08-susak-face"
+                 data-username="@subshelter"
+                 data-caption=":-B">
+                <video preload="metadata" loop playsinline muted
+                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562538/susak-face.jpg">
+                    <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562538/susak-face.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <!--END-VIDEOS-->
+
+        </div>
+    </div>
+
+    <canvas id="s-hearts"></canvas>
+
+    <!--CONTENT-->
+    
+    
+    
+    
+    <!--JAVASCRIPT-->
+
+    <script>
+    (function () {
+
+    // ── READ SLIDES FROM HTML ──────────────────────────
+    const rawSlides = Array.from(document.querySelectorAll('.s-video'));
+    const N = rawSlides.length;
+
+    // ── SHUFFLE ───────────────────────────────────────
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length-1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i+1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    const SESSION_KEY = 's_order_v2';
+    let order;
+    const saved = sessionStorage.getItem(SESSION_KEY);
+    if (saved) {
+        const ids = JSON.parse(saved);
+        order = ids.map(id => rawSlides.find(s => s.dataset.id === id)).filter(Boolean);
+        rawSlides.forEach(s => { if (!order.includes(s)) order.push(s); });
+    } else {
+        order = shuffle(rawSlides);
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(order.map(s => s.dataset.id)));
+    }
+
+    // shared link: move target video to front
+    const sharedId = location.hash.replace('#','');
+    if (sharedId) {
+        const idx = order.findIndex(s => s.dataset.id === sharedId);
+        if (idx > 0) {
+            const [item] = order.splice(idx, 1);
+            order.unshift(item);
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(order.map(s => s.dataset.id)));
+        }
+    }
+
+    // ── BUILD STRIP ───────────────────────────────────
+    const strip = document.getElementById('s-strip');
+    const stage = document.getElementById('s-stage');
+    strip.innerHTML = '';
+
+    order.forEach((slide) => {
+        const vid = slide.dataset.id;
+
+        // info
+        const info = document.createElement('div');
+        info.className = 's-info';
+        info.innerHTML = `<div class="s-username">${slide.dataset.username || '@subshelter'}</div><div class="s-caption">${slide.dataset.caption || ''}</div>`;
+
+        // actions
+        const actions = document.createElement('div');
+        actions.className = 's-actions';
+
+        // heart
+        const heartBtn = document.createElement('button');
+        heartBtn.className = 's-btn';
+        heartBtn.setAttribute('aria-label','like');
+        if (localStorage.getItem('s_heart_' + vid) === '1') heartBtn.classList.add('hearted');
+        heartBtn.innerHTML = `<svg viewBox="0 0 24 24"><path class="s-heart-icon" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+        heartBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const on = !heartBtn.classList.contains('hearted');
+            heartBtn.classList.toggle('hearted');
+            heartBtn.classList.remove('s-jumping');
+            void heartBtn.offsetWidth;
+            heartBtn.classList.add('s-jumping');
+            localStorage.setItem('s_heart_' + vid, on ? '1' : '0');
+            if (navigator.vibrate) navigator.vibrate(25);
+            if (on) launchHearts();
+        });
+
+        // share
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 's-btn';
+        shareBtn.setAttribute('aria-label','share');
+        shareBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
+        const toast = document.createElement('div');
+        toast.className = 's-toast';
+        toast.textContent = 'copied!';
+        shareBtn.appendChild(toast);
+        shareBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(`${location.origin}/feed#${vid}`).then(() => {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 1800);
+            });
+        });
+
+        actions.appendChild(heartBtn);
+        actions.appendChild(shareBtn);
+        slide.appendChild(info);
+        slide.appendChild(actions);
+        strip.appendChild(slide);
+    });
+
+    strip.style.height = `${N * 100}dvh`;
+
+    // ── STATE ─────────────────────────────────────────
+    let current     = 0;
+    let offsetY     = 0;
+    let dragStart   = 0;
+    let dragDelta   = 0;
+    let isDragging  = false;
+    let isAnimating = false;
+    let unlocked    = false;
+
+    const vh = () => window.innerHeight;
+
+    // ── SNAP ──────────────────────────────────────────
+    function snapTo(index, animate) {
+        // wrap at end → go to 0; can't go before 0
+        if (index >= N) index = 0;
+        if (index < 0)  index = 0;
+        current = index;
+        offsetY = current * vh();
+
+        strip.style.transition = animate
+            ? 'transform 0.36s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            : 'none';
+        strip.style.transform = `translateY(${-offsetY}px)`;
+        history.replaceState(null, '', `/feed#${order[current].dataset.id}`);
+        playActive();
+    }
+
+    function playActive() {
+        order.forEach((slide, i) => {
+            const v = slide.querySelector('video');
+            if (!v) return;
+            if (i === current) {
+                if (unlocked) v.muted = false;
+                else v.muted = true;
+                v.play().catch(() => {});
+            } else {
+                v.pause();
+            }
+        });
+    }
+
+    snapTo(0, false);
+
+    // ── WELCOME ───────────────────────────────────────
+    const welcome  = document.getElementById('s-welcome');
+    const enterBtn = document.getElementById('s-enter-btn');
+    const SEEN_KEY = 's_welcomed_v2';
+
+    function dismissWelcome() {
+        unlocked = true;
+        welcome.style.transition = 'opacity 0.4s ease';
+        welcome.style.opacity = '0';
+        setTimeout(() => { welcome.style.display = 'none'; }, 420);
+        localStorage.setItem(SEEN_KEY, '1');
+        const v = order[current].querySelector('video');
+        if (v) { v.muted = false; v.play().catch(() => {}); }
+    }
+
+    if (localStorage.getItem(SEEN_KEY) === '1') {
+        welcome.style.display = 'none';
+        unlocked = true;
+    } else {
+        enterBtn.addEventListener('click', dismissWelcome);
+    }
+
+    // ── RESOLVE SNAP (49/50 threshold) ────────────────
+    function resolveSnap() {
+        isDragging = false;
+        isAnimating = true;
+        const threshold = vh() * 0.5;
+
+        if (dragDelta < -threshold) {
+            snapTo(current + 1, true);
+        } else if (dragDelta > threshold && current > 0) {
+            snapTo(current - 1, true);
+        } else {
+            // snap back
+            strip.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            strip.style.transform = `translateY(${-offsetY}px)`;
+        }
+
+        setTimeout(() => { isAnimating = false; }, 400);
+        dragDelta = 0;
+    }
+
+    // ── LIVE DRAG TRANSFORM ───────────────────────────
+    function applyDrag(delta) {
+        let pull = delta;
+        // resistance at top (can't pull before first video)
+        if (current === 0 && delta > 0) pull = delta * 0.15;
+        strip.style.transform = `translateY(${-(offsetY - pull)}px)`;
+    }
+
+    // ── TOUCH ─────────────────────────────────────────
+    stage.addEventListener('touchstart', e => {
+        if (isAnimating) return;
+        dragStart = e.touches[0].clientY;
+        dragDelta = 0;
+        isDragging = true;
+        strip.style.transition = 'none';
+    }, { passive: true });
+
+    stage.addEventListener('touchmove', e => {
+        if (!isDragging || isAnimating) return;
+        dragDelta = e.touches[0].clientY - dragStart;
+        applyDrag(dragDelta);
+    }, { passive: true });
+
+    stage.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        resolveSnap();
+    });
+
+    // ── MOUSE DRAG ────────────────────────────────────
+    stage.addEventListener('mousedown', e => {
+        if (isAnimating) return;
+        dragStart = e.clientY;
+        dragDelta = 0;
+        isDragging = true;
+        strip.style.transition = 'none';
+        stage.classList.add('grabbing');
+    });
+
+    window.addEventListener('mousemove', e => {
+        if (!isDragging || isAnimating) return;
+        dragDelta = e.clientY - dragStart;
+        applyDrag(dragDelta);
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        stage.classList.remove('grabbing');
+        resolveSnap();
+    });
+
+    // ── TAP TO PLAY/PAUSE ─────────────────────────────
+    stage.addEventListener('click', e => {
+        if (e.target.closest('.s-btn')) return;
+        const v = order[current].querySelector('video');
+        if (!v) return;
+        if (v.paused) v.play().catch(() => {});
+        else v.pause();
+    });
+
+    // ── KEYBOARD ──────────────────────────────────────
+    document.addEventListener('keydown', e => {
+        if (isAnimating) return;
+        if (e.key === 'ArrowDown') { isAnimating = true; snapTo(current + 1, true); setTimeout(() => { isAnimating = false; }, 400); }
+        if (e.key === 'ArrowUp' && current > 0) { isAnimating = true; snapTo(current - 1, true); setTimeout(() => { isAnimating = false; }, 400); }
+    });
+
+    // ── RESIZE ────────────────────────────────────────
+    window.addEventListener('resize', () => {
+        strip.style.height = `${N * vh()}dvh`;
+        snapTo(current, false);
+    });
+
+    // ── FLOATING HEARTS ───────────────────────────────
+    const canvas = document.getElementById('s-hearts');
+    const ctx    = canvas.getContext('2d');
+    const parts  = [];
+
+    function resizeCanvas() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function drawHeart(x, y, s) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.beginPath();
+        ctx.moveTo(0, -s*0.3);
+        ctx.bezierCurveTo( s*0.5,-s,  s*1.2,-s*0.2, 0, s*0.7);
+        ctx.bezierCurveTo(-s*1.2,-s*0.2,-s*0.5,-s, 0,-s*0.3);
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    function launchHearts() {
+        const sx = window.innerWidth - 36;
+        const sy = window.innerHeight * 0.44;
+        for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+                parts.push({
+                    x: sx + (Math.random()-0.5)*22,
+                    y: sy,
+                    s: 7 + Math.random()*12,
+                    a: 0.38 + Math.random()*0.2,
+                    vx: (Math.random()-0.5)*1.3,
+                    vy: -(1.5+Math.random()*2.2),
+                    life: 1.0
+                });
+            }, i * 110);
+        }
+    }
+
+    (function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = parts.length-1; i >= 0; i--) {
+            const p = parts[i];
+            p.x += p.vx; p.y += p.vy; p.life -= 0.013; p.a = p.life * 0.58;
+            if (p.life <= 0) { parts.splice(i,1); continue; }
+            ctx.globalAlpha = Math.max(0, p.a);
+            ctx.fillStyle = '#e8304a';
+            drawHeart(p.x, p.y, p.s);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+    })();
+
+    })();
+    </script>
+</body>
+</html>
