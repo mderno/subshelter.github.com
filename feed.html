@@ -449,6 +449,28 @@ Copy one <div class="s-video"> block and fill in:
 
     const vh = () => window.innerHeight;
 
+    // ── WELCOME ───────────────────────────────────────
+    const welcome  = document.getElementById('s-welcome');
+    const enterBtn = document.getElementById('s-enter-btn');
+    const SEEN_KEY = 's_welcomed_v2';
+
+    function dismissWelcome() {
+        unlocked = true;
+        welcome.style.transition = 'opacity 0.4s ease';
+        welcome.style.opacity = '0';
+        setTimeout(() => { welcome.style.display = 'none'; }, 420);
+        localStorage.setItem(SEEN_KEY, '1');
+        const v = order[current].querySelector('video');
+        if (v) { v.muted = false; v.play().catch(() => {}); }
+    }
+
+    if (localStorage.getItem(SEEN_KEY) === '1') {
+        welcome.style.display = 'none';
+        unlocked = true;
+    } else {
+        enterBtn.addEventListener('click', dismissWelcome);
+    }
+
     // ── SNAP ──────────────────────────────────────────
     function snapTo(index, animate) {
         // wrap at end → go to 0; can't go before 0
@@ -485,27 +507,6 @@ Copy one <div class="s-video"> block and fill in:
         snapTo(0, false);
     });
 
-    // ── WELCOME ───────────────────────────────────────
-    const welcome  = document.getElementById('s-welcome');
-    const enterBtn = document.getElementById('s-enter-btn');
-    const SEEN_KEY = 's_welcomed_v2';
-
-    function dismissWelcome() {
-        unlocked = true;
-        welcome.style.transition = 'opacity 0.4s ease';
-        welcome.style.opacity = '0';
-        setTimeout(() => { welcome.style.display = 'none'; }, 420);
-        localStorage.setItem(SEEN_KEY, '1');
-        const v = order[current].querySelector('video');
-        if (v) { v.muted = false; v.play().catch(() => {}); }
-    }
-
-    if (localStorage.getItem(SEEN_KEY) === '1') {
-        welcome.style.display = 'none';
-        unlocked = true;
-    } else {
-        enterBtn.addEventListener('click', dismissWelcome);
-    }
 
     // ── RESOLVE SNAP (49/50 threshold) ────────────────
     function resolveSnap() {
