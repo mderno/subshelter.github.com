@@ -467,6 +467,11 @@ Copy one <div class="s-video"> block and fill in:
     if (localStorage.getItem(SEEN_KEY) === '1') {
         welcome.style.display = 'none';
         unlocked = true;
+        document.addEventListener('click', function unlockAudio() {
+            const v = order[current].querySelector('video');
+            if (v) { v.muted = false; v.play().catch(() => {}); }
+            document.removeEventListener('click', unlockAudio);
+        }, { once: true });
     } else {
         enterBtn.addEventListener('click', dismissWelcome);
     }
