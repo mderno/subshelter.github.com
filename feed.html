@@ -260,7 +260,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="26-05-mayales-1"
                  data-username="@subshelter"
                  data-caption="Mayales in Orto Bar, 2026">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788465344/mayales-orto-bar.mp4" type="video/mp4">
                 </video>
             </div>
@@ -269,7 +269,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="26-07-gabonsa-1"
                  data-username="@subshelter"
                  data-caption="seen on Gabonsa festival, Innsbruck 2026">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788446735/gabonsa26-1.mp4" type="video/mp4">
                 </video>
             </div>
@@ -278,7 +278,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-jadrolinija-window"
                  data-username="@subshelter"
                  data-caption="čao celina">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562504/susak-jadrolinija-window.mp4" type="video/mp4">
                 </video>
             </div>
@@ -287,7 +287,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-jadrolinija-tv"
                  data-username="@subshelter"
                  data-caption="jadrolinija, avg 25">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562511/susak-jadrolinija-tv.mp4" type="video/mp4">
                 </video>
             </div>
@@ -296,7 +296,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-grad-plava"
                  data-username="@subshelter"
                  data-caption=":-)">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562509/susak-grad-plava.mp4" type="video/mp4">
                 </video>
             </div>
@@ -305,7 +305,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-grad"
                  data-username="@subshelter"
                  data-caption="dobro jutro ribari">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562514/susak-grad.mp4" type="video/mp4">
                 </video>
             </div>
@@ -314,7 +314,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-face"
                  data-username="@subshelter"
                  data-caption=":-B">
-                <video preload="auto" loop playsinline>
+                <video preload="metadata" loop playsinline>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562538/susak-face.mp4" type="video/mp4">
                 </video>
             </div>
@@ -500,7 +500,6 @@ Copy one <div class="s-video"> block and fill in:
                 v.muted = !unlocked;
                 v.play().catch(() => {});
             } else if (i === current + 1 || i === current - 1) {
-                v.load();
                 v.pause();
             } else {
                 v.pause();
