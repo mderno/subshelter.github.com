@@ -260,8 +260,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="26-05-mayales-1"
                  data-username="@subshelter"
                  data-caption="Mayales in Orto Bar, 2026">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788465344/mayales-orto-bar.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788465344/mayales-orto-bar.mp4" type="video/mp4">
                 </video>
             </div>
@@ -270,8 +269,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="26-07-gabonsa-1"
                  data-username="@subshelter"
                  data-caption="seen on Gabonsa festival, Innsbruck 2026">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788446735/gabonsa26-1.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788446735/gabonsa26-1.mp4" type="video/mp4">
                 </video>
             </div>
@@ -280,8 +278,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-jadrolinija-window"
                  data-username="@subshelter"
                  data-caption="čao celina">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562504/susak-jadrolinija-window.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562504/susak-jadrolinija-window.mp4" type="video/mp4">
                 </video>
             </div>
@@ -290,8 +287,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-jadrolinija-tv"
                  data-username="@subshelter"
                  data-caption="jadrolinija, avg 25">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562511/susak-jadrolinija-tv.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562511/susak-jadrolinija-tv.mp4" type="video/mp4">
                 </video>
             </div>
@@ -300,8 +296,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-grad-plava"
                  data-username="@subshelter"
                  data-caption=":-)">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/v1788562509/susak-grad-plava.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562509/susak-grad-plava.mp4" type="video/mp4">
                 </video>
             </div>
@@ -310,8 +305,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-grad"
                  data-username="@subshelter"
                  data-caption="dobro jutro ribari">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562514/susak-grad.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562514/susak-grad.mp4" type="video/mp4">
                 </video>
             </div>
@@ -320,8 +314,7 @@ Copy one <div class="s-video"> block and fill in:
                  data-id="25-08-susak-face"
                  data-username="@subshelter"
                  data-caption=":-B">
-                <video preload="metadata" loop playsinline muted
-                       poster="https://res.cloudinary.com/duqx17nie/video/upload/so_0/v1788562538/susak-face.jpg">
+                <video preload="auto" loop playsinline muted>
                     <source src="https://res.cloudinary.com/duqx17nie/video/upload/v1788562538/susak-face.mp4" type="video/mp4">
                 </video>
             </div>
@@ -450,6 +443,10 @@ Copy one <div class="s-video"> block and fill in:
     let isAnimating = false;
     let unlocked    = false;
 
+    let lastDelta = 0;
+    let lastTime  = 0;
+    let velocity  = 0;
+
     const vh = () => window.innerHeight;
 
     // ── SNAP ──────────────────────────────────────────
@@ -473,9 +470,11 @@ Copy one <div class="s-video"> block and fill in:
             const v = slide.querySelector('video');
             if (!v) return;
             if (i === current) {
-                if (unlocked) v.muted = false;
-                else v.muted = true;
+                v.muted = !unlocked;
                 v.play().catch(() => {});
+            } else if (i === current + 1 || i === current - 1) {
+                v.load();
+                v.pause();
             } else {
                 v.pause();
             }
@@ -510,20 +509,22 @@ Copy one <div class="s-video"> block and fill in:
     function resolveSnap() {
         isDragging = false;
         isAnimating = true;
-        const threshold = vh() * 0.5;
 
-        if (dragDelta < -threshold) {
+        const threshold = vh() * 0.5;
+        const fastFlick = Math.abs(velocity) > 0.4;
+
+        if (dragDelta < -threshold || (fastFlick && dragDelta < -30)) {
             snapTo(current + 1, true);
-        } else if (dragDelta > threshold && current > 0) {
+        } else if ((dragDelta > threshold || (fastFlick && dragDelta > 30)) && current > 0) {
             snapTo(current - 1, true);
         } else {
-            // snap back
             strip.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             strip.style.transform = `translateY(${-offsetY}px)`;
         }
 
         setTimeout(() => { isAnimating = false; }, 400);
         dragDelta = 0;
+        velocity  = 0;
     }
 
     // ── LIVE DRAG TRANSFORM ───────────────────────────
@@ -545,7 +546,11 @@ Copy one <div class="s-video"> block and fill in:
 
     stage.addEventListener('touchmove', e => {
         if (!isDragging || isAnimating) return;
+        const now = Date.now();
+        const prev = dragDelta;
         dragDelta = e.touches[0].clientY - dragStart;
+        if (now - lastTime > 0) velocity = (dragDelta - prev) / (now - lastTime);
+        lastTime = now;
         applyDrag(dragDelta);
     }, { passive: true });
 
@@ -566,7 +571,11 @@ Copy one <div class="s-video"> block and fill in:
 
     window.addEventListener('mousemove', e => {
         if (!isDragging || isAnimating) return;
+        const now = Date.now();
+        const prev = dragDelta;
         dragDelta = e.clientY - dragStart;
+        if (now - lastTime > 0) velocity = (dragDelta - prev) / (now - lastTime);
+        lastTime = now;
         applyDrag(dragDelta);
     });
 
